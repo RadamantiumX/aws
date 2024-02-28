@@ -1,0 +1,35 @@
+# S3 **Simple Storage Service**
+
+Esto sirve para alamacenar archivos estáticos, ya sea como: imágenes, documentos, archivos de HTML, CSS, etc... Las palabras claves de *S3*, son los BUCKETS (cajón), que son donde metemos nuestros archivos, propiamente dichos, *objetos*.
+
+Aqui puede contener las bases de datos, es por eso que, al dejarlos expuestos peude ser atacado maliciosamente...
+
+Al crear el BUCKET, también, podemos crear una (o mas) carpeta.
+
+En S3 los archivos estáticos no todos tienen la misma prioridad o importancia. Las necesidades de acceder a cada recurso es diferente, eso se puede configurar, pero tiene un costo adicional.
+
+Al activar el acceso publico a un BUCKET, tambien tenemos que crear una *politica* para eso, para determinar el accesos a los objetos almacenados en el mismo. En este punto tenemos muchas posibilidades, es más, tenemos ejemplos de politicas que se pueden utilizar. 
+link:
+https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies.html?icmpid=docs_amazons3_console
+
+```json
+{
+   "Version":"2012-10-17",
+   "Statement":[
+      {
+         "Sid": "PublicRead", 
+         "Principal":"*",
+         "Effect":"Allow",
+         "Action":[
+            "s3:GetObject",
+            "s3:GetObjectVersion"
+         ],
+         "Resource":"arn:aws:s3:::rada-aws-demo-s3/*",
+        
+      }
+   ]
+}
+```
+Podemos buscar por servicios, todas las acciones ("Action")  que podemos añadir. En el Resource ponemos el *ARN del Bucket*, el "/*" es para que afecte a todos los archivos.
+
+Con esta politica ya obtenemos los permisos de acceso, en este caso, a la imagen. Pero se puede desplegar una pagina web entera, si asi lo queremos.
