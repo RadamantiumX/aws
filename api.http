@@ -1,0 +1,11 @@
+## Send LAMBDA FUNCTION
+GET https://iq2sadwg56oqaxpqc52mwefucq0liiut.lambda-url.us-east-2.on.aws/
+
+{
+    "Content-Type" : "application/json",
+    "body" :{
+       "user": "Chavo8TV" 
+    } 
+}
+
+

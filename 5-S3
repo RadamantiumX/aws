@@ -1,4 +1,4 @@
-# S3 **Simple Storage Service**
+# S3 Simple Storage Service
 
 Esto sirve para alamacenar archivos estáticos, ya sea como: imágenes, documentos, archivos de HTML, CSS, etc... Las palabras claves de *S3*, son los BUCKETS (cajón), que son donde metemos nuestros archivos, propiamente dichos, *objetos*.
 
@@ -33,3 +33,73 @@ https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies.ht
 Podemos buscar por servicios, todas las acciones ("Action")  que podemos añadir. En el Resource ponemos el *ARN del Bucket*, el "/*" es para que afecte a todos los archivos.
 
 Con esta politica ya obtenemos los permisos de acceso, en este caso, a la imagen. Pero se puede desplegar una pagina web entera, si asi lo queremos.
+
+
+## IAM
+
+En lo siguiente, vamos a crear un usuario que solo puede subir *S3*. Para eso necesitamos el servicio de IAM, es quien se encarga de administar el acceso a los recuroso de AWS.
+
+![alt text](image-6.png)
+
+Cuando establecemos los permisos de acceso, adjuntamos politicas directamente, pera qe tengan acceso total a *S3*. Creamos la politica la un determinado usuario.
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:*",
+                "s3-object-lambda:*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+Entonces, a S3 tendrá acceso a todo. Al crealo nos dara para crear una nueva clave de acceso.
+
+![alt text](image-7.png)
+
+Una vez terminado, podemos copiarla e ir a la linea de comando (CLI).
+
+![alt text](image-8.png)
+
+Tendremos la KEY y el SECRET, ambos tenemos que ponerlos en la linea de comandos. Al finalizar, tendriamos nuestro usuario local, esta tarea, también, se puede automatizar en GITHUB actions.
+
+```bash
+aws configure
+```
+
+Ya se puede iniciar el despliegue de este sitio web.
+
+```bash
+aws s3 sync /build_folder <bucket>
+```
+Mi ejemeplo:
+
+```bash
+aws s3 sync ./dist s3://rada-aws-demo-s3
+```
+Si todo ha salido bien, nuestro archivos deberían haber subido correctamente.
+
+En las propiedades de nuestro BUCKET, podemos encontrarnos con la opción de *Editar alojamiento de sitios web estáticos*. Tildamos "Habilitar".
+
+*Nota: En las SPA's, las redirecciones a diferentes rutas deberían apuntar siempre al archivo index.html, que es donde tenemos toda la logica del sitio web. Ver link: https://docs.aws.amazon.com/AmazonS3/latest/userguide/how-to-page-redirect.html?icmpid=docs_amazons3_console*
+
+Al finalizar las configuraciones, si vamos a **Alojamiento de sitios web estáticos**, ya nos muestra la URL de nuestro sitio web, y ya no es necesario indicar el archivo al cual apunta.
+
+Si contamos con un proyecto creado con la paqueteria *NPM*, podemos agregar el **script** al **package.json**:
+
+```json
+{
+    "script": {
+    "deploy": "npm run build && aws s3 sync ./dist s3://<<nombre_del_bucket>>",
+}
+}
+```
+Ahi tenemos la BUILD y el deployment en un solo comando. Pero lo mas recomandable es ponerlo en GITHUB ACTIONS.
+
+
+
